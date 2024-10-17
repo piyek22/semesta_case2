@@ -3,33 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Exports\StockReportExport;
+use App\Exports\ParetoExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 
 class StockReportController extends Controller
 {
-    // Menampilkan halaman laporan stok obat
     public function showStockReport()
     {
-        // Mengambil data stok dari tabel master_item
         $stockData = DB::table('master_item')
             ->select('kode_item', 'satuan', 'nama_item', 'harga_beli', 'stok')
             ->get();
 
-        // Menampilkan view laporan stok obat
         return view('stock_report', compact('stockData'));
     }
 
-    // Fungsi untuk mengekspor data stok obat ke Excel
     public function exportStockReport(Request $request)
     {
-        // Mengekspor file Excel
-        $fileName = 'stock_report.xlsx';
+        return Excel::download(new StockReportExport, 'stock_report.xlsx');
+    }
 
-        // Menampilkan pesan sukses setelah download
-        session()->flash('success', 'Stok obat berhasil di-export.');
+    public function exportPareto(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        return Excel::download(new StockReportExport, $fileName);
+        // Ambil data penjualan berdasarkan tanggal
+        $salesData = DB::table('penjualan')
+            ->join('penjualan_detail', 'penjualan.id', '=', 'penjualan_detail.id_penjualan')
+            ->select('penjualan_detail.kode_item', DB::raw('SUM(penjualan_detail.kuantiti) as total_sold'))
+            ->whereBetween('penjualan.tanggal', [$startDate, $endDate])
+            ->groupBy('penjualan_detail.kode_item')
+            ->get();
+
+        // Mengelompokkan data ke dalam kategori Pareto
+        $paretoA = $salesData->where('total_sold', '>', 10);
+        $paretoB = $salesData->where('total_sold', '>', 7);
+        $paretoC = $salesData->where('total_sold', '>', 5);
+        $paretoD = $salesData->where('total_sold', '>', 3);
+        $paretoE = $salesData->where('total_sold', '>', 1);
+
+        // Menggunakan Excel untuk mengunduh file
+        return Excel::download(new ParetoExport($paretoA, $paretoB, $paretoC, $paretoD, $paretoE), 'pareto_report.xlsx');
     }
 }

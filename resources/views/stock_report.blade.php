@@ -12,10 +12,19 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="text-center">Laporan Stok Obat</h3>
-                <form action="{{ route('export.stock') }}" method="POST" class="float-end">
-                    @csrf
-                    <button type="submit" class="btn btn-success btn-sm">Export Excel Stok Obat</button>
-                </form>
+                <div class="d-flex justify-content-between">
+                    <form action="{{ route('export.stock') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-sm">Export Excel Stok Obat</button>
+                    </form>
+
+                    <form action="{{ route('export.pareto') }}" method="POST">
+                        @csrf
+                        <input type="date" name="start_date" required>
+                        <input type="date" name="end_date" required>
+                        <button type="submit" class="btn btn-warning btn-sm">Export Pareto</button>
+                    </form>
+                </div>
             </div>
 
             <!-- Notifikasi umum -->
