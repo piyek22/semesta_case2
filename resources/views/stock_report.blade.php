@@ -3,71 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Report</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .table-header {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-export {
-            margin-top: 20px;
-        }
-    </style>
+    <title>Laporan Stok Obat</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.dataTables.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Laporan Stok Obat</h3>
+                <form action="{{ route('export.stock') }}" method="POST" class="float-end">
+                    @csrf
+                    <button type="submit" class="btn btn-success btn-sm">Export Excel Stok Obat</button>
+                </form>
+            </div>
 
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Laporan Stock Obat</h1>
+            <!-- Notifikasi umum -->
+            @if (Session::has('success'))
+            <div class="alert alert-success text-center mt-3">
+                {{ Session::get('success') }}
+            </div>
+            @endif
 
-
-    <table class="table table-striped table-bordered" id="stockTable">
-        <thead class="table-header">
-            <tr>
-                <th>No</th>
-                <th>Kode Item</th>
-                <th>Satuan</th>
-                <th>Nama Item</th>
-                <th>Harga beli</th>
-                <th>Stok</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($stockData as $item)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->kode_item }}</td>
-                    <td>{{ $item->satuan }}</td>
-                    <td>{{ $item->nama_item }}</td>
-                    <td>{{ $item->harga_beli }}</td>
-                    <td>{{ $item->stok }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-
-    <div class="text-center btn-export">
-        <a href="{{ route('export.stock') }}" class="btn btn-primary">Export Stock Obat</a>
+            <!-- Tabel data stok obat -->
+            <div class="card-body">
+                <table class="display table table-bordered table-striped" id="stock-table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Item</th>
+                            <th>Nama Item</th>
+                            <th>Satuan</th>
+                            <th>Harga Beli</th>
+                            <th>Stok</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($stockData as $item)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $item->kode_item }}</td>
+                            <td>{{ $item->nama_item }}</td>
+                            <td>{{ $item->satuan }}</td>
+                            <td>{{ $item->harga_beli }}</td>
+                            <td>{{ $item->stok }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#stockTable').DataTable({
-            "paging": true,
-            "searching": true,
-            "ordering": true,
-            "info": true
+    <!-- Load jQuery and DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#stock-table').DataTable({
+                "language": {
+                    "emptyTable": "Tidak ada data obat ditemukan"
+                }
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
