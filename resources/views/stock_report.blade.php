@@ -24,7 +24,7 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4">Laporan Stock Obat</h1>
 
-    <!-- Table to display stock data -->
+
     <table class="table table-striped table-bordered" id="stockTable">
         <thead class="table-header">
             <tr>
@@ -50,7 +50,7 @@
         </tbody>
     </table>
 
-    <!-- Button to export the report -->
+
     <div class="text-center btn-export">
         <a href="{{ route('export.stock') }}" class="btn btn-primary">Export Stock Obat</a>
     </div>
